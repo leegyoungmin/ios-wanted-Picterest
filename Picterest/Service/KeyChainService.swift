@@ -1,5 +1,5 @@
 //
-//  TabViewModel.swift
+//  KeyChainService.swift
 //  Picterest
 //
 //  Created by 이경민 on 2022/07/25.
@@ -7,14 +7,13 @@
 
 import Foundation
 
-class TabViewModel {
-    // MARK: - Properties
+class KeyChainService {
+    static var shared = KeyChainService()
+    
     private let account = "ApiKey"
     private let service = "com.mini.picterest"
-    
-    
-    var key: String?
-    
+    var key: String = ""
+
     init() {
         if !self.readItem() {
             self.key = Bundle().accessKey
@@ -22,10 +21,8 @@ class TabViewModel {
             let _ = addItem()
         }
     }
-}
-
-// MARK: - Key Chain Methods
-private extension TabViewModel {
+    
+    
     func readItem() -> Bool {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
@@ -51,9 +48,6 @@ private extension TabViewModel {
     }
     
     func addItem() -> Bool {
-        guard let key = key else {
-            return false
-        }
         
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,

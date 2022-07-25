@@ -6,9 +6,6 @@
 import UIKit
 
 class TabViewController: UITabBarController {
-    
-    let viewModel = TabViewModel()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -19,10 +16,7 @@ class TabViewController: UITabBarController {
                                            image: UIImage(systemName: "star"),
                                            selectedImage: UIImage(systemName: "star.fill"))
         
-        let feedController = FeedViewController(
-            viewModel: FeedViewModel(key: viewModel.key ?? "")
-        )
-        
+        let feedController = FeedViewController(viewModel: FeedViewModel())
         let feedNavController = UINavigationController(rootViewController: feedController)
         feedController.tabBarItem = feedTabBarItem
         

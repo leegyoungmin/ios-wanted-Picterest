@@ -27,13 +27,13 @@ class FeedCellView: UICollectionViewCell {
     
     func setImageView() {
         backgroundColor = .red
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(imageView)
         
         NSLayoutConstraint.activate([
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor)
         ])
     }
 }

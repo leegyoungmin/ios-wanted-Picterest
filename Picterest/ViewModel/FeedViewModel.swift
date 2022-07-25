@@ -7,17 +7,20 @@
 
 import Foundation
 import Combine
+import UIKit
 
-class FeedViewModel {
-    let key: String
-    @Published var photos: Photo = []
+class FeedViewModel: ObservableObject {
+    let key = KeyChainService.shared.key
     
-    init(key: String) {
-        self.key = key
-        loadImage()
+    @Published var imageDatas: Photo = []
+    @Published var images: [UIImage] = []
+    var cancellable = Set<AnyCancellable>()
+
+    init() {
+        loadImageData()
     }
     
-    func loadImage() {
+    func loadImageData() {
         let urlString = "https://api.unsplash.com/photos/random"
         guard var components = URLComponents(string: urlString) else {
             return
@@ -37,28 +40,19 @@ class FeedViewModel {
             return
         }
         
-        URLSession.shared.dataTask(with: requestURL) { data, response, error in
-            guard error == nil else {
-                print("Error in urlsession")
-                return
+        URLSession.init(configuration: URLSessionConfiguration.ephemeral).dataTaskPublisher(for: requestURL)
+            .tryMap { data, response in
+                guard let response = response as? HTTPURLResponse,
+                      response.statusCode == 200 else {
+                    throw URLError(.badServerResponse)
+                }
+                
+                return data
             }
-            
-            guard let data = data,let response = response as? HTTPURLResponse, (200..<300) ~= response.statusCode else {
-                print("Error in status code")
-                return
-            }
-            
-            guard let output = try? JSONDecoder().decode(Photo.self, from: data) else {
-                print("Convert output")
-                return
-            }
-            
-            self.photos.append(contentsOf: output)
-            print(self.photos)
-        }
-        .resume()
-        
-        
+            .decode(type: Photo.self, decoder: JSONDecoder())
+            .replaceError(with: [])
+            .eraseToAnyPublisher()
+            .assign(to: \.imageDatas, on: self)
+            .store(in: &cancellable)
     }
-    
 }

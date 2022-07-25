@@ -9,19 +9,17 @@ import UIKit
 import Combine
 
 class FeedViewController: UIViewController {
-    private var cancellable = Set<AnyCancellable>()
     let viewModel: FeedViewModel
     
     lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 10
-        layout.scrollDirection = .vertical
-        layout.sectionInset = UIEdgeInsets.zero
+        let layout = FeedCollectionLayout()
+        layout.delegate = self
         let collectionView = UICollectionView(frame: .zero,collectionViewLayout: layout)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(FeedCellView.self, forCellWithReuseIdentifier: FeedCellView.identifier)
         collectionView.backgroundColor = .white
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         return collectionView
     }()
     
@@ -31,7 +29,7 @@ class FeedViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = FeedViewModel(key: "")
+        self.viewModel = FeedViewModel()
         super.init(coder: coder)
     }
     
@@ -40,44 +38,52 @@ class FeedViewController: UIViewController {
         setUpNavBar()
         configView()
         view.backgroundColor = .lightGray
-        
-        bindImage()
+        bindImageData()
     }
 }
-
-
 
 // MARK: - CollectionView DataSource
 extension FeedViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("collection view number of items in section \(viewModel.photos.count)")
-        return viewModel.photos.count
+        return viewModel.imageDatas.isEmpty ? 0 : viewModel.imageDatas.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCellView.identifier, for: indexPath) as? FeedCellView else {
             return UICollectionViewCell()
         }
-        
         return cell
     }
-    
 }
 
-// MARK: - CollectionView Delegate
 extension FeedViewController: UICollectionViewDelegate {
-    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+      let itemSize = (collectionView.frame.width - (collectionView.contentInset.left + collectionView.contentInset.right + 10)) / 2
+      return CGSize(width: itemSize, height: itemSize)
+    }
 }
+
+extension FeedViewController: FeedCollectionLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, heightRateForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat {
+        let item = viewModel.imageDatas[indexPath.item]
+        return CGFloat(item.height) / CGFloat(item.width)
+    }
+}
+
 
 // MARK: - Binding Methods
 private extension FeedViewController {
-    func bindImage() {
-        viewModel.$photos
+    func bindImageData() {
+        viewModel.$imageDatas
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.collectionView.reloadData()
+            .sink { images in
+                if !images.isEmpty {
+                    self.collectionView.invalidateIntrinsicContentSize()
+                    self.collectionView.reloadData()
+                }
+                print(images)
             }
-            .store(in: &cancellable)
+            .store(in: &viewModel.cancellable)
     }
 }
 

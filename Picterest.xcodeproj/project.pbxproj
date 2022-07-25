@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		181B8083288E86CD00ACF80C /* FeedCollectionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181B8082288E86CD00ACF80C /* FeedCollectionLayout.swift */; };
+		181B8085288EBE2100ACF80C /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181B8084288EBE2100ACF80C /* KeyChainService.swift */; };
 		1867C3E3288E52C1002C42F9 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3E2288E52C1002C42F9 /* FeedViewController.swift */; };
 		1867C3E6288E52F7002C42F9 /* SavedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3E5288E52F7002C42F9 /* SavedViewController.swift */; };
 		1867C3EC288E5A22002C42F9 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3EB288E5A22002C42F9 /* BundleExtension.swift */; };
-		1867C3EE288E5B10002C42F9 /* TabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3ED288E5B10002C42F9 /* TabViewModel.swift */; };
 		1867C3F1288E60FE002C42F9 /* FeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3F0288E60FE002C42F9 /* FeedViewModel.swift */; };
 		1867C3F3288E62FD002C42F9 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3F2288E62FD002C42F9 /* Photo.swift */; };
 		1867C3F5288E6AF6002C42F9 /* FeedCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3F4288E6AF6002C42F9 /* FeedCellView.swift */; };
@@ -22,10 +23,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		181B8082288E86CD00ACF80C /* FeedCollectionLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionLayout.swift; sourceTree = "<group>"; };
+		181B8084288EBE2100ACF80C /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
 		1867C3E2288E52C1002C42F9 /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		1867C3E5288E52F7002C42F9 /* SavedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedViewController.swift; sourceTree = "<group>"; };
 		1867C3EB288E5A22002C42F9 /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
-		1867C3ED288E5B10002C42F9 /* TabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewModel.swift; sourceTree = "<group>"; };
 		1867C3F0288E60FE002C42F9 /* FeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewModel.swift; sourceTree = "<group>"; };
 		1867C3F2288E62FD002C42F9 /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		1867C3F4288E6AF6002C42F9 /* FeedCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCellView.swift; sourceTree = "<group>"; };
@@ -82,7 +84,6 @@
 		1867C3DF288E525D002C42F9 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				1867C3ED288E5B10002C42F9 /* TabViewModel.swift */,
 				1867C3F0288E60FE002C42F9 /* FeedViewModel.swift */,
 			);
 			path = ViewModel;
@@ -93,6 +94,7 @@
 			children = (
 				1867C3E2288E52C1002C42F9 /* FeedViewController.swift */,
 				1867C3F4288E6AF6002C42F9 /* FeedCellView.swift */,
+				181B8082288E86CD00ACF80C /* FeedCollectionLayout.swift */,
 			);
 			path = FeedView;
 			sourceTree = "<group>";
@@ -109,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				1867C3EA288E5A19002C42F9 /* Extensions */,
+				181B8084288EBE2100ACF80C /* KeyChainService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -219,7 +222,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1867C3EE288E5B10002C42F9 /* TabViewModel.swift in Sources */,
 				DE15E66028604278003DD2F5 /* TabViewController.swift in Sources */,
 				1867C3E6288E52F7002C42F9 /* SavedViewController.swift in Sources */,
 				1867C3F3288E62FD002C42F9 /* Photo.swift in Sources */,
@@ -227,6 +229,8 @@
 				DE15E65C28604278003DD2F5 /* AppDelegate.swift in Sources */,
 				1867C3EC288E5A22002C42F9 /* BundleExtension.swift in Sources */,
 				1867C3E3288E52C1002C42F9 /* FeedViewController.swift in Sources */,
+				181B8083288E86CD00ACF80C /* FeedCollectionLayout.swift in Sources */,
+				181B8085288EBE2100ACF80C /* KeyChainService.swift in Sources */,
 				1867C3F1288E60FE002C42F9 /* FeedViewModel.swift in Sources */,
 				DE15E65E28604278003DD2F5 /* SceneDelegate.swift in Sources */,
 			);
