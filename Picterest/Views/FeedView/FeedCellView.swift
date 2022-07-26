@@ -11,20 +11,13 @@ import Combine
 class FeedCellView: UICollectionViewCell {
     static let identifier = "FeedCellView"
     
-    var viewModel: FeedCellViewModel?
+    var viewModel: FeedCellViewModel = FeedCellViewModel()
     private var cancellable = Set<AnyCancellable>()
-    @Published var index: Int = 0
+    @Published var imageURL: String?
     
     var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
         return imageView
-    }()
-    
-    var label: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        return label
     }()
     
     
@@ -34,17 +27,29 @@ class FeedCellView: UICollectionViewCell {
         self.clipsToBounds = true
         self.autoresizesSubviews = true
         
-        label.frame = self.bounds
-        label.clipsToBounds = true
+        imageView.frame = self.bounds
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 15
         setImageView()
-        self.addSubview(label)
+        self.addSubview(imageView)
         
-        label.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
+        imageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
         
-        $index.sink { value in
-            self.label.text = value.description
+        $imageURL.sink { urlString in
+            if let urlString = urlString {
+                self.viewModel.loadImage(urlString, width: frame.size.width)
+                self.viewModel.fetchImage()
+            }
+
         }
         .store(in: &cancellable)
+        
+        viewModel.$image
+            .receive(on: DispatchQueue.main)
+            .sink { image in
+                self.imageView.image = image
+            }
+            .store(in: &cancellable)
     }
     
     required init?(coder: NSCoder) {
@@ -56,12 +61,15 @@ class FeedCellView: UICollectionViewCell {
         contentView.layer.borderWidth = 1
         contentView.layer.borderColor = UIColor.clear.cgColor
         contentView.backgroundColor = .gray
-        contentView.clipsToBounds = true
+        contentView.clipsToBounds = false
     }
     
     override func prepareForReuse() {
+        self.imageURL = nil
+        viewModel.cancelImage()
+        viewModel.image = UIImage()
+        imageView.image = nil
         super.prepareForReuse()
-        viewModel?.image = nil
     }
     
 //    func bindImage() {

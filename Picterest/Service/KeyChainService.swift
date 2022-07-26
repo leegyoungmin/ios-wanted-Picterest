@@ -20,6 +20,13 @@ class KeyChainService {
             
             let _ = addItem()
         }
+        
+        if key != Bundle().accessKey {
+            let isUpdate = updateKeyValue()
+            if isUpdate {
+                let _ = self.readItem()
+            }
+        }
     }
     
     
@@ -66,6 +73,22 @@ class KeyChainService {
             }
         }()
         
+        return result
+    }
+    
+    func updateKeyValue() -> Bool {
+        let query: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrAccount: account,
+            kSecAttrService: service,
+            kSecValueData: key.data(using: .utf8) as Any
+        ]
+        let attribute: [CFString: Any] = [
+            kSecAttrAccount: account,
+            kSecValueData: Bundle().accessKey.data(using: .utf8) as Any
+        ]
+        let result = SecItemUpdate(query as CFDictionary, attribute as CFDictionary) == errSecSuccess
+        print(result)
         return result
     }
 }

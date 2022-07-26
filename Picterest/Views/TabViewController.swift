@@ -25,6 +25,5 @@ class TabViewController: UITabBarController {
         
         setViewControllers([feedNavController,savedController], animated: true)
         tabBar.backgroundColor = .lightGray
-        
     }
 }

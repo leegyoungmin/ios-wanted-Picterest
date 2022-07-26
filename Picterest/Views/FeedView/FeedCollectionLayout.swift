@@ -8,7 +8,10 @@
 import UIKit
 
 protocol FeedCollectionLayoutDelegate: AnyObject {
-    func collectionView(_ collectionView: UICollectionView, heightRateForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat
+    func collectionView(
+        _ collectionView: UICollectionView,
+        heightRateForPhotoAtIndexPath indexPath: IndexPath
+    ) -> CGFloat
 }
 
 class FeedCollectionLayout: UICollectionViewLayout {

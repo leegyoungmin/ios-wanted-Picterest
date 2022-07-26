@@ -17,6 +17,7 @@ class FeedViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero,collectionViewLayout: layout)
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.prefetchDataSource = self
         collectionView.register(FeedCellView.self, forCellWithReuseIdentifier: FeedCellView.identifier)
         collectionView.backgroundColor = .white
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
@@ -42,6 +43,21 @@ class FeedViewController: UIViewController {
     }
 }
 
+extension FeedViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        print(indexPaths)
+        for indexPath in indexPaths {
+            let model = viewModel.imageDatas[indexPath.row]
+            guard let cell = collectionView.cellForItem(at: indexPath) as? FeedCellView else {
+                return
+            }
+            
+            cell.viewModel.loadImage(model.urls.raw, width: cell.frame.width)
+            cell.viewModel.fetchImage()
+        }
+    }
+}
+
 // MARK: - CollectionView DataSource
 extension FeedViewController: UICollectionViewDataSource {
     func collectionView(
@@ -61,12 +77,12 @@ extension FeedViewController: UICollectionViewDataSource {
         ) as? FeedCellView else {
             return UICollectionViewCell()
         }
-//        let imageURL = viewModel.imageDatas[indexPath.item].urls.raw
-        cell.index = indexPath.item
+        cell.imageURL = viewModel.imageDatas[indexPath.item].urls.raw
         return cell
     }
 }
 
+// MARK: - CollectionView Delegate
 extension FeedViewController: UICollectionViewDelegate {
     func collectionView(
         _ collectionView: UICollectionView,
@@ -81,6 +97,7 @@ extension FeedViewController: UICollectionViewDelegate {
     }
 }
 
+// MARK: - FeedCollectionLayout Delegate
 extension FeedViewController: FeedCollectionLayoutDelegate {
     func collectionView(
         _ collectionView: UICollectionView,

@@ -113,8 +113,8 @@
 		1867C3E7288E59EC002C42F9 /* Service */ = {
 			isa = PBXGroup;
 			children = (
-				1867C3EA288E5A19002C42F9 /* Extensions */,
 				181B8084288EBE2100ACF80C /* KeyChainService.swift */,
+				1867C3EA288E5A19002C42F9 /* Extensions */,
 			);
 			path = Service;
 			sourceTree = "<group>";

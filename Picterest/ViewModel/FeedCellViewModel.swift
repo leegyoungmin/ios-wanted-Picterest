@@ -9,22 +9,23 @@ import UIKit
 import Combine
 
 class FeedCellViewModel: ObservableObject {
-    let imageURL: String
-    @Published var image: UIImage?
+    @Published var image: UIImage = UIImage()
+    var imageLoadTask: URLSessionDataTask?
     
-    init(imageURL: String) {
-        self.imageURL = imageURL
-        loadImage()
-    }
-    
-    func loadImage() {
-        guard let requestURL = URL(string: imageURL) else {
+    func loadImage(_ imageURL: String, width: CGFloat) {
+        var component = URLComponents(string: imageURL)
+        
+        let widthQuery = URLQueryItem(name: "w", value: "\(width)")
+        
+        component?.queryItems?.append(widthQuery)
+        
+        guard let requestURL = component?.url else {
             return
         }
         
-        URLSession.shared.dataTask(with: requestURL) { data, response, error in
+        let task = URLSession.shared.dataTask(with: requestURL) { data, response, error in
             guard error == nil else {
-                print("Error in data task")
+                print("Error in data task \(error?.localizedDescription)")
                 return
             }
             
@@ -33,7 +34,18 @@ class FeedCellViewModel: ObservableObject {
                 print("Error in convert Image")
                 return
             }
+            print(receiveImage)
             self.image = receiveImage
-        }.resume()
+        }
+        
+        self.imageLoadTask = task
+    }
+    
+    func fetchImage() {
+        imageLoadTask?.resume()
+    }
+    
+    func cancelImage(){
+        imageLoadTask?.cancel()
     }
 }
