@@ -75,8 +75,9 @@ class FeedCollectionLayout: UICollectionViewLayout {
         }
     }
     
-    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-
+    override func layoutAttributesForElements(
+        in rect: CGRect
+    ) -> [UICollectionViewLayoutAttributes]? {
         var visibleLayoutAttributes: [UICollectionViewLayoutAttributes] = []
         for attribute in cache {
             if attribute.frame.intersects(rect) {
@@ -87,7 +88,9 @@ class FeedCollectionLayout: UICollectionViewLayout {
         return visibleLayoutAttributes
     }
     
-    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+    override func layoutAttributesForItem(
+        at indexPath: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
         return cache[indexPath.item]
     }
 }

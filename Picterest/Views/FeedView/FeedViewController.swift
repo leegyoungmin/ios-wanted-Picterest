@@ -44,29 +44,48 @@ class FeedViewController: UIViewController {
 
 // MARK: - CollectionView DataSource
 extension FeedViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
         return viewModel.imageDatas.isEmpty ? 0 : viewModel.imageDatas.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCellView.identifier, for: indexPath) as? FeedCellView else {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: FeedCellView.identifier,
+            for: indexPath
+        ) as? FeedCellView else {
             return UICollectionViewCell()
         }
-        let imageURL = viewModel.imageDatas[indexPath.item].urls.raw
+//        let imageURL = viewModel.imageDatas[indexPath.item].urls.raw
         cell.index = indexPath.item
         return cell
     }
 }
 
 extension FeedViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-      let itemSize = (collectionView.frame.width - (collectionView.contentInset.left + collectionView.contentInset.right + 10)) / 2
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        let collectionFrame = collectionView.frame
+        let collectioninset = collectionView.contentInset.left + collectionView.contentInset.right
+        
+        let itemSize = (collectionFrame.width - (collectioninset + 10)) / 2
       return CGSize(width: itemSize, height: itemSize)
     }
 }
 
 extension FeedViewController: FeedCollectionLayoutDelegate {
-    func collectionView(_ collectionView: UICollectionView, heightRateForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        heightRateForPhotoAtIndexPath indexPath: IndexPath
+    ) -> CGFloat {
         let item = viewModel.imageDatas[indexPath.item]
         return CGFloat(item.height) / CGFloat(item.width)
     }

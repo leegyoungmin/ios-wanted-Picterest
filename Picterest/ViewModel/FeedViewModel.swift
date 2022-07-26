@@ -40,7 +40,8 @@ class FeedViewModel: ObservableObject {
             return
         }
         
-        URLSession.init(configuration: URLSessionConfiguration.ephemeral).dataTaskPublisher(for: requestURL)
+        URLSession.shared
+            .dataTaskPublisher(for: requestURL)
             .tryMap { data, response in
                 guard let response = response as? HTTPURLResponse,
                       response.statusCode == 200 else {
