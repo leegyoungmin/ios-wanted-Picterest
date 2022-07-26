@@ -52,6 +52,8 @@ extension FeedViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCellView.identifier, for: indexPath) as? FeedCellView else {
             return UICollectionViewCell()
         }
+        let imageURL = viewModel.imageDatas[indexPath.item].urls.raw
+        cell.index = indexPath.item
         return cell
     }
 }
@@ -78,10 +80,8 @@ private extension FeedViewController {
             .receive(on: DispatchQueue.main)
             .sink { images in
                 if !images.isEmpty {
-                    self.collectionView.invalidateIntrinsicContentSize()
-                    self.collectionView.reloadData()
+                    self.collectionView.collectionViewLayout.collectionView?.reloadData()
                 }
-                print(images)
             }
             .store(in: &viewModel.cancellable)
     }
