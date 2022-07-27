@@ -40,6 +40,9 @@ class FeedViewController: UIViewController {
         setUpNavBar()
         configView()
         bindImageData()
+        
+
+
     }
 }
 
@@ -63,13 +66,28 @@ extension FeedViewController: UICollectionViewDelegate {
 
 extension FeedViewController: CellTopButtonDelegate {
     func CellTopButton(to didTapStarButton: UIButton) {
-        let isSelected = didTapStarButton.isSelected
-        didTapStarButton.isSelected = !isSelected
-        if didTapStarButton.isSelected {
-            didTapStarButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
-        } else {
+        let alertController = UIAlertController(
+            title: "사진저장",
+            message: "사진과 함께 남길 메모를 작성해주세요.",
+            preferredStyle: .alert
+        )
+        
+        let confirmAction = UIAlertAction(title: "저장", style: .default) { action in
+            if let writtenText = alertController.textFields?.first?.text {
+                didTapStarButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+                print(writtenText)
+            }
+        }
+        let cancelAction = UIAlertAction(title: "취소", style: .destructive) { action in
             didTapStarButton.setImage(UIImage(systemName: "star"), for: .normal)
         }
+        [cancelAction,confirmAction].forEach {
+            alertController.addAction($0)
+        }
+        
+        alertController.addTextField()
+        
+        self.present(alertController, animated: true)
     }
 }
 
@@ -86,6 +104,7 @@ extension FeedViewController: UICollectionViewDataSourcePrefetching {
             }
             
             let imageData = viewModel.imageDatas[indexPath.row]
+            cell.topButtonView.delegate = self
             cell.configureImage(url: imageData.urls.raw, hexString: imageData.color)
         }
     }
@@ -144,6 +163,22 @@ private extension FeedViewController {
 
 // MARK: - UI Configure Methods
 private extension FeedViewController {
+    
+    func presentAlert() {
+        let alertController = UIAlertController(
+            title: "사진 저장",
+            message: "저장할 사진에 남길 메모를 작성해주세요.",
+            preferredStyle: .alert
+        )
+        
+        let confirmButton = UIAlertAction(title: "저장하기", style: .default)
+        let cancelButton = UIAlertAction(title: "취소", style: .cancel)
+        [cancelButton,confirmButton].forEach { action in
+            alertController.addAction(action)
+        }
+//        self.navigationController?.present(alertController, animated: true)
+        self.present(alertController, animated: true)
+    }
     func setUpNavBar() {
         navigationItem.title = "피드"
         navigationController?.navigationBar.prefersLargeTitles = true
