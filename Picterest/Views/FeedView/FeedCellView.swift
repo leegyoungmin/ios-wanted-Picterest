@@ -7,10 +7,17 @@
 
 import UIKit
 
-class FeedCellView: UICollectionViewCell {
+protocol ImageDrawAble: AnyObject {
+    var blurEffect: UIBlurEffect { get }
+    var visualEffectView: UIVisualEffectView { get }
+}
+
+class FeedCellView: UICollectionViewCell, ImageDrawAble {
     private let cache = CacheService.shared
     static let identifier = "FeedCellView"
     private var dataTask: URLSessionDataTask?
+    let blurEffect = UIBlurEffect(style: .regular)
+    lazy var visualEffectView = UIVisualEffectView(effect: blurEffect)
     
     var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -48,32 +55,37 @@ class FeedCellView: UICollectionViewCell {
         let backgroundColor = UIColor(hexString: hexString)?.withAlphaComponent(0.5)
         self.contentView.backgroundColor = backgroundColor
         self.contentView.layer.cornerRadius = 15
-        self.contentView.clipsToBounds = true
     }
     
-    func configureImage(url: String, hexString: String) {
+    private func setUpImageURL(_ url: String) -> URLComponents? {
         var components = URLComponents(string: url)
         let queryItem = URLQueryItem(name: "w", value: self.bounds.size.width.description)
         let heightItem = URLQueryItem(name: "h", value: self.bounds.size.height.description)
         components?.queryItems?.append(queryItem)
         components?.queryItems?.append(heightItem)
         
-        guard let imageURL = components?.url else {
-            return
-        }
-        
-        let blurEffect = UIBlurEffect(style: .regular)
-        let visualEffectView = UIVisualEffectView(effect: blurEffect)
+        return components
+    }
+    
+    private func setAnimation() {
         visualEffectView.alpha = 1
         visualEffectView.frame = self.contentView.frame
         imageView.addSubview(visualEffectView)
-        
+    }
+    
+    func configureImage(url: String, hexString: String) {
+        setAnimation()
+        guard let component = setUpImageURL(url),
+              let imageURL = component.url else {
+            return
+        }
         
         if let data = cache.fetchData(imageURL.absoluteString) {
             DispatchQueue.main.async {
                 
                 UIView.animate(withDuration: 1.0) {
-                    visualEffectView.alpha = 0
+                    self.contentView.backgroundColor = .clear
+                    self.visualEffectView.alpha = 0
                 }
                 self.imageView.image = UIImage(data: data)
             }
@@ -95,7 +107,8 @@ class FeedCellView: UICollectionViewCell {
             
             DispatchQueue.main.async {
                 UIView.animate(withDuration: 1.0) {
-                    visualEffectView.alpha = 0
+                    self?.contentView.backgroundColor = .clear
+                    self?.visualEffectView.alpha = 0
                 }
                 self?.imageView.image = receiveImage
                 self?.cache.uploadData(key: imageURL.absoluteString, data: data)

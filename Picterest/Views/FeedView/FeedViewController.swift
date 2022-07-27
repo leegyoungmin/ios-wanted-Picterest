@@ -8,7 +8,6 @@
 import UIKit
 import Combine
 
-
 class FeedViewController: UIViewController {
     let viewModel: FeedViewModel
     private var bag: [UUID: AnyCancellable] = [:]
@@ -44,7 +43,10 @@ class FeedViewController: UIViewController {
 }
 
 extension FeedViewController: UICollectionViewDataSourcePrefetching {
-    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        prefetchItemsAt indexPaths: [IndexPath]
+    ) {
         indexPaths.forEach { indexPath in
             guard let cell = collectionView.cellForItem(at: indexPath) as? FeedCellView else {
                 return
