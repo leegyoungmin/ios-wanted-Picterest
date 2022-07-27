@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 
+
 class FeedViewController: UIViewController {
     let viewModel: FeedViewModel
     private var bag: [UUID: AnyCancellable] = [:]
@@ -18,6 +19,7 @@ class FeedViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero,collectionViewLayout: layout)
         collectionView.register(FeedCellView.self, forCellWithReuseIdentifier: FeedCellView.identifier)
         collectionView.dataSource = self
+        collectionView.prefetchDataSource = self
         collectionView.backgroundColor = .white
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         return collectionView
@@ -41,6 +43,20 @@ class FeedViewController: UIViewController {
     }
 }
 
+extension FeedViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        indexPaths.forEach { indexPath in
+            guard let cell = collectionView.cellForItem(at: indexPath) as? FeedCellView else {
+                return
+            }
+            
+            let imageData = viewModel.imageDatas[indexPath.row]
+            cell.configureBackground(hexString: imageData.color)
+            cell.configureImage(url: imageData.urls.raw, hexString: imageData.color)
+        }
+    }
+}
+
 // MARK: - CollectionView DataSource
 extension FeedViewController: UICollectionViewDataSource {
     func collectionView(
@@ -60,7 +76,9 @@ extension FeedViewController: UICollectionViewDataSource {
         ) as? FeedCellView else {
             return UICollectionViewCell()
         }
-        cell.configureImage(url: viewModel.imageDatas[indexPath.row].urls.raw)
+        let imageData = viewModel.imageDatas[indexPath.row]
+        cell.configureBackground(hexString: imageData.color)
+        cell.configureImage(url: imageData.urls.raw, hexString: imageData.color)
         return cell
     }
 }

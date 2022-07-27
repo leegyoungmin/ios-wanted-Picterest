@@ -44,7 +44,14 @@ class FeedCellView: UICollectionViewCell {
         imageView.image = nil
     }
     
-    func configureImage(url: String) {
+    func configureBackground(hexString: String) {
+        let backgroundColor = UIColor(hexString: hexString)?.withAlphaComponent(0.5)
+        self.contentView.backgroundColor = backgroundColor
+        self.contentView.layer.cornerRadius = 15
+        self.contentView.clipsToBounds = true
+    }
+    
+    func configureImage(url: String, hexString: String) {
         var components = URLComponents(string: url)
         let queryItem = URLQueryItem(name: "w", value: self.bounds.size.width.description)
         let heightItem = URLQueryItem(name: "h", value: self.bounds.size.height.description)
@@ -55,8 +62,19 @@ class FeedCellView: UICollectionViewCell {
             return
         }
         
+        let blurEffect = UIBlurEffect(style: .regular)
+        let visualEffectView = UIVisualEffectView(effect: blurEffect)
+        visualEffectView.alpha = 1
+        visualEffectView.frame = self.contentView.frame
+        imageView.addSubview(visualEffectView)
+        
+        
         if let data = cache.fetchData(imageURL.absoluteString) {
             DispatchQueue.main.async {
+                
+                UIView.animate(withDuration: 1.0) {
+                    visualEffectView.alpha = 0
+                }
                 self.imageView.image = UIImage(data: data)
             }
             return
@@ -76,6 +94,9 @@ class FeedCellView: UICollectionViewCell {
             }
             
             DispatchQueue.main.async {
+                UIView.animate(withDuration: 1.0) {
+                    visualEffectView.alpha = 0
+                }
                 self?.imageView.image = receiveImage
                 self?.cache.uploadData(key: imageURL.absoluteString, data: data)
             }
@@ -84,40 +105,8 @@ class FeedCellView: UICollectionViewCell {
         dataTask?.resume()
     }
     
-    func cancelDataTask() {
+    private func cancelDataTask() {
         dataTask?.cancel()
         dataTask = nil
     }
 }
-
-
-//extension FeedCellView {
-//    func configureImage(_ imageURL: String, width: CGFloat) {
-//        
-//        if let data = cache.fetchData(imageURL),
-//           let image = UIImage(data: data) {
-//            self.imageView.image = image
-//            return
-//        }
-//        
-//        var component = URLComponents(string: imageURL)
-//        
-//        guard let requestURL = component?.url else {
-//            return
-//        }
-//        
-//        let task = 
-//
-//        }
-//        
-//        self.dataTask = task
-//    }
-//    
-//    func fetchImage() {
-//        dataTask?.resume()
-//    }
-//    
-//    func cancelImage(){
-//        dataTask?.cancel()
-//    }
-//}

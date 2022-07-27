@@ -65,8 +65,6 @@ class FeedCollectionLayout: UICollectionViewLayout {
                                y: yOffset[yIndex],
                                width: columnWidth,
                                height: height)
-            print(item)
-            print(frame)
             let insetFrame = frame.insetBy(dx: cellPadding, dy: cellPadding)
             let attribute = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             attribute.frame = insetFrame

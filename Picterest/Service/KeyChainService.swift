@@ -88,7 +88,6 @@ class KeyChainService {
             kSecValueData: Bundle().accessKey.data(using: .utf8) as Any
         ]
         let result = SecItemUpdate(query as CFDictionary, attribute as CFDictionary) == errSecSuccess
-        print(result)
         return result
     }
 }
