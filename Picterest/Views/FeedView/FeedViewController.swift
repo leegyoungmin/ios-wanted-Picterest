@@ -48,14 +48,12 @@ class FeedViewController: UIViewController {
 
 extension FeedViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        if collectionView.contentOffset.y > (collectionView.contentSize.height - self.collectionView.bounds.size.height) {
-//            print("do updating")
+        if collectionView.contentOffset.y > (collectionView.contentSize.height - self.collectionView.bounds.size.height) {
+            print("do updating")
 //            if !viewModel.isUpdating {
-//                viewModel.addImageDatas()
-//
-//                collectionView.reloadData()
+//                p
 //            }
-//        }
+        }
     }
 }
 
@@ -66,28 +64,11 @@ extension FeedViewController: UICollectionViewDelegate {
 
 extension FeedViewController: CellTopButtonDelegate {
     func CellTopButton(to didTapStarButton: UIButton) {
-        let alertController = UIAlertController(
-            title: "사진저장",
-            message: "사진과 함께 남길 메모를 작성해주세요.",
-            preferredStyle: .alert
-        )
-        
-        let confirmAction = UIAlertAction(title: "저장", style: .default) { action in
-            if let writtenText = alertController.textFields?.first?.text {
-                didTapStarButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
-                print(writtenText)
-            }
+        if didTapStarButton.isSelected {
+            presentErrorAlert()
+        } else {
+            presentWriteAlert(sender: didTapStarButton)
         }
-        let cancelAction = UIAlertAction(title: "취소", style: .destructive) { action in
-            didTapStarButton.setImage(UIImage(systemName: "star"), for: .normal)
-        }
-        [cancelAction,confirmAction].forEach {
-            alertController.addAction($0)
-        }
-        
-        alertController.addTextField()
-        
-        self.present(alertController, animated: true)
     }
 }
 
@@ -164,19 +145,42 @@ private extension FeedViewController {
 // MARK: - UI Configure Methods
 private extension FeedViewController {
     
-    func presentAlert() {
+    func presentErrorAlert() {
         let alertController = UIAlertController(
-            title: "사진 저장",
-            message: "저장할 사진에 남길 메모를 작성해주세요.",
+            title: "저장오류",
+            message: "이미 저장된 사진입니다.",
             preferredStyle: .alert
         )
         
-        let confirmButton = UIAlertAction(title: "저장하기", style: .default)
-        let cancelButton = UIAlertAction(title: "취소", style: .cancel)
-        [cancelButton,confirmButton].forEach { action in
-            alertController.addAction(action)
+        let confirmAction = UIAlertAction(title: "확인", style: .default)
+        alertController.addAction(confirmAction)
+        present(alertController, animated: true)
+    }
+    
+    func presentWriteAlert(sender: UIButton) {
+        let alertController = UIAlertController(
+            title: "사진저장",
+            message: "사진과 함께 남길 메모를 작성해주세요.",
+            preferredStyle: .alert
+        )
+        
+        let confirmAction = UIAlertAction(title: "저장", style: .default) { action in
+            if let writtenText = alertController.textFields?.first?.text {
+                sender.isSelected = true
+                sender.setImage(UIImage(systemName: "star.fill"), for: .normal)
+                print(writtenText)
+            }
         }
-//        self.navigationController?.present(alertController, animated: true)
+        let cancelAction = UIAlertAction(title: "취소", style: .destructive) { action in
+            sender.isSelected = false
+            sender.setImage(UIImage(systemName: "star"), for: .normal)
+        }
+        [cancelAction,confirmAction].forEach {
+            alertController.addAction($0)
+        }
+        
+        alertController.addTextField()
+        
         self.present(alertController, animated: true)
     }
     func setUpNavBar() {
