@@ -16,8 +16,9 @@ class FeedViewController: UIViewController {
         let layout = FeedCollectionLayout()
         layout.delegate = self
         let collectionView = UICollectionView(frame: .zero,collectionViewLayout: layout)
-        collectionView.register(FeedCellView.self, forCellWithReuseIdentifier: FeedCellView.identifier)
+        collectionView.register(FeedCollectionCustomCell.self, forCellWithReuseIdentifier: FeedCollectionCustomCell.identifier)
         collectionView.dataSource = self
+        collectionView.delegate = self
         collectionView.prefetchDataSource = self
         collectionView.backgroundColor = .white
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
@@ -42,18 +43,49 @@ class FeedViewController: UIViewController {
     }
 }
 
+extension FeedViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        if collectionView.contentOffset.y > (collectionView.contentSize.height - self.collectionView.bounds.size.height) {
+//            print("do updating")
+//            if !viewModel.isUpdating {
+//                viewModel.addImageDatas()
+//
+//                collectionView.reloadData()
+//            }
+//        }
+    }
+}
+
+extension FeedViewController: UICollectionViewDelegate {
+    
+}
+
+
+extension FeedViewController: CellTopButtonDelegate {
+    func CellTopButton(to didTapStarButton: UIButton) {
+        let isSelected = didTapStarButton.isSelected
+        didTapStarButton.isSelected = !isSelected
+        if didTapStarButton.isSelected {
+            didTapStarButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+        } else {
+            didTapStarButton.setImage(UIImage(systemName: "star"), for: .normal)
+        }
+    }
+}
+
+// MARK: - UICollectionView DataSource Prefetching
 extension FeedViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(
         _ collectionView: UICollectionView,
         prefetchItemsAt indexPaths: [IndexPath]
     ) {
         indexPaths.forEach { indexPath in
-            guard let cell = collectionView.cellForItem(at: indexPath) as? FeedCellView else {
+            
+            guard let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionCustomCell else {
                 return
             }
             
             let imageData = viewModel.imageDatas[indexPath.row]
-            cell.configureBackground(hexString: imageData.color)
             cell.configureImage(url: imageData.urls.raw, hexString: imageData.color)
         }
     }
@@ -73,14 +105,15 @@ extension FeedViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: FeedCellView.identifier,
+            withReuseIdentifier: FeedCollectionCustomCell.identifier,
             for: indexPath
-        ) as? FeedCellView else {
+        ) as? FeedCollectionCustomCell else {
             return UICollectionViewCell()
         }
         let imageData = viewModel.imageDatas[indexPath.row]
-        cell.configureBackground(hexString: imageData.color)
+        cell.topButtonView.delegate = self
         cell.configureImage(url: imageData.urls.raw, hexString: imageData.color)
+        cell.topButtonView.indexLabel.text = indexPath.row.description + "번째 사진입니다."
         return cell
     }
 }

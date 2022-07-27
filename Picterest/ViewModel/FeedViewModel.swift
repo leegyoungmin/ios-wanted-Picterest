@@ -10,9 +10,9 @@ import UIKit
 
 class FeedViewModel {
     let key = KeyChainService.shared.key
+    var isUpdating: Bool = false
     private let caches = CacheService.shared
     @Published var imageDatas: Photo = []
-//    @Published var images: [UIImage] = []
     var cancellable = Set<AnyCancellable>()
 
     init() {
@@ -20,6 +20,7 @@ class FeedViewModel {
     }
     
     func loadImageData() {
+        isUpdating = true
         let urlString = "https://api.unsplash.com/photos/random"
         guard var components = URLComponents(string: urlString) else {
             return
@@ -54,5 +55,6 @@ class FeedViewModel {
             .eraseToAnyPublisher()
             .assign(to: \.imageDatas, on: self)
             .store(in: &cancellable)
+        isUpdating = false
     }
 }

@@ -14,7 +14,8 @@
 		1867C3EC288E5A22002C42F9 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3EB288E5A22002C42F9 /* BundleExtension.swift */; };
 		1867C3F1288E60FE002C42F9 /* FeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3F0288E60FE002C42F9 /* FeedViewModel.swift */; };
 		1867C3F3288E62FD002C42F9 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3F2288E62FD002C42F9 /* Photo.swift */; };
-		1867C3F5288E6AF6002C42F9 /* FeedCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3F4288E6AF6002C42F9 /* FeedCellView.swift */; };
+		1867C3F5288E6AF6002C42F9 /* FeedCollectionCustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1867C3F4288E6AF6002C42F9 /* FeedCollectionCustomCell.swift */; };
+		1868AA482891443A00FFC3CC /* CellTopButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1868AA472891443A00FFC3CC /* CellTopButtonView.swift */; };
 		18CA5FE22890D6CA0073AA00 /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CA5FE12890D6CA0073AA00 /* CacheService.swift */; };
 		18CA5FE4289116F50073AA00 /* UIColor+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CA5FE3289116F50073AA00 /* UIColor+.swift */; };
 		DE15E65C28604278003DD2F5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE15E65B28604278003DD2F5 /* AppDelegate.swift */; };
@@ -32,7 +33,8 @@
 		1867C3EB288E5A22002C42F9 /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
 		1867C3F0288E60FE002C42F9 /* FeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewModel.swift; sourceTree = "<group>"; };
 		1867C3F2288E62FD002C42F9 /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
-		1867C3F4288E6AF6002C42F9 /* FeedCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCellView.swift; sourceTree = "<group>"; };
+		1867C3F4288E6AF6002C42F9 /* FeedCollectionCustomCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionCustomCell.swift; sourceTree = "<group>"; };
+		1868AA472891443A00FFC3CC /* CellTopButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellTopButtonView.swift; sourceTree = "<group>"; };
 		18CA5FE12890D6CA0073AA00 /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
 		18CA5FE3289116F50073AA00 /* UIColor+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+.swift"; sourceTree = "<group>"; };
 		DE15E65828604278003DD2F5 /* Picterest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Picterest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -96,8 +98,9 @@
 		1867C3E1288E528A002C42F9 /* FeedView */ = {
 			isa = PBXGroup;
 			children = (
+				1868AA462891442F00FFC3CC /* SubViews */,
 				1867C3E2288E52C1002C42F9 /* FeedViewController.swift */,
-				1867C3F4288E6AF6002C42F9 /* FeedCellView.swift */,
+				1867C3F4288E6AF6002C42F9 /* FeedCollectionCustomCell.swift */,
 				181B8082288E86CD00ACF80C /* FeedCollectionLayout.swift */,
 			);
 			path = FeedView;
@@ -128,6 +131,14 @@
 				18CA5FE3289116F50073AA00 /* UIColor+.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		1868AA462891442F00FFC3CC /* SubViews */ = {
+			isa = PBXGroup;
+			children = (
+				1868AA472891443A00FFC3CC /* CellTopButtonView.swift */,
+			);
+			path = SubViews;
 			sourceTree = "<group>";
 		};
 		DE15E64F28604278003DD2F5 = {
@@ -228,10 +239,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1868AA482891443A00FFC3CC /* CellTopButtonView.swift in Sources */,
 				DE15E66028604278003DD2F5 /* TabViewController.swift in Sources */,
 				1867C3E6288E52F7002C42F9 /* SavedViewController.swift in Sources */,
 				1867C3F3288E62FD002C42F9 /* Photo.swift in Sources */,
-				1867C3F5288E6AF6002C42F9 /* FeedCellView.swift in Sources */,
+				1867C3F5288E6AF6002C42F9 /* FeedCollectionCustomCell.swift in Sources */,
 				DE15E65C28604278003DD2F5 /* AppDelegate.swift in Sources */,
 				1867C3EC288E5A22002C42F9 /* BundleExtension.swift in Sources */,
 				1867C3E3288E52C1002C42F9 /* FeedViewController.swift in Sources */,
