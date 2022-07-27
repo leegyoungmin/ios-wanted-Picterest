@@ -15,6 +15,9 @@ struct PhotoElement: Codable {
     let color: String
     let urls: Urls
     let links: Links
+    var ratio: CGFloat {
+        return CGFloat(height) / CGFloat(width)
+    }
 }
 
 // MARK: - Links
@@ -24,7 +27,13 @@ struct Links: Codable {
 
 // MARK: - Urls
 struct Urls: Codable {
-    let raw: String
+    let raw, full, regular, small: String
+    let thumb, smallS3: String
+
+    enum CodingKeys: String, CodingKey {
+        case raw, full, regular, small, thumb
+        case smallS3 = "small_s3"
+    }
 }
 
 typealias Photo = [PhotoElement]

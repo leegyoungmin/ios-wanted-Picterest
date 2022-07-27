@@ -10,15 +10,14 @@ import Combine
 
 class FeedViewController: UIViewController {
     let viewModel: FeedViewModel
+    private var bag: [UUID: AnyCancellable] = [:]
     
     lazy var collectionView: UICollectionView = {
         let layout = FeedCollectionLayout()
         layout.delegate = self
         let collectionView = UICollectionView(frame: .zero,collectionViewLayout: layout)
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.prefetchDataSource = self
         collectionView.register(FeedCellView.self, forCellWithReuseIdentifier: FeedCellView.identifier)
+        collectionView.dataSource = self
         collectionView.backgroundColor = .white
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         return collectionView
@@ -38,23 +37,7 @@ class FeedViewController: UIViewController {
         super.viewDidLoad()
         setUpNavBar()
         configView()
-        view.backgroundColor = .lightGray
         bindImageData()
-    }
-}
-
-extension FeedViewController: UICollectionViewDataSourcePrefetching {
-    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        print(indexPaths)
-        for indexPath in indexPaths {
-            let model = viewModel.imageDatas[indexPath.row]
-            guard let cell = collectionView.cellForItem(at: indexPath) as? FeedCellView else {
-                return
-            }
-            
-            cell.viewModel.loadImage(model.urls.raw, width: cell.frame.width)
-            cell.viewModel.fetchImage()
-        }
     }
 }
 
@@ -64,9 +47,9 @@ extension FeedViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        return viewModel.imageDatas.isEmpty ? 0 : viewModel.imageDatas.count
+        return viewModel.imageDatas.count
     }
-    
+
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
@@ -77,23 +60,8 @@ extension FeedViewController: UICollectionViewDataSource {
         ) as? FeedCellView else {
             return UICollectionViewCell()
         }
-        cell.imageURL = viewModel.imageDatas[indexPath.item].urls.raw
+        cell.configureImage(url: viewModel.imageDatas[indexPath.row].urls.raw)
         return cell
-    }
-}
-
-// MARK: - CollectionView Delegate
-extension FeedViewController: UICollectionViewDelegate {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
-        let collectionFrame = collectionView.frame
-        let collectioninset = collectionView.contentInset.left + collectionView.contentInset.right
-        
-        let itemSize = (collectionFrame.width - (collectioninset + 10)) / 2
-      return CGSize(width: itemSize, height: itemSize)
     }
 }
 
@@ -104,7 +72,7 @@ extension FeedViewController: FeedCollectionLayoutDelegate {
         heightRateForPhotoAtIndexPath indexPath: IndexPath
     ) -> CGFloat {
         let item = viewModel.imageDatas[indexPath.item]
-        return CGFloat(item.height) / CGFloat(item.width)
+        return item.ratio
     }
 }
 
@@ -114,10 +82,8 @@ private extension FeedViewController {
     func bindImageData() {
         viewModel.$imageDatas
             .receive(on: DispatchQueue.main)
-            .sink { images in
-                if !images.isEmpty {
-                    self.collectionView.collectionViewLayout.collectionView?.reloadData()
-                }
+            .sink { [weak self] _ in
+                self?.collectionView.reloadData()
             }
             .store(in: &viewModel.cancellable)
     }
@@ -132,14 +98,15 @@ private extension FeedViewController {
     }
     
     func configView() {
+        view.backgroundColor = .systemBackground
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        
+        let safeArea = view.safeAreaLayoutGuide
         NSLayoutConstraint.activate([
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: safeArea.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
         ])
     }
 }

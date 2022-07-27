@@ -5,15 +5,14 @@
 //  Created by 이경민 on 2022/07/25.
 //
 
-import Foundation
 import Combine
 import UIKit
 
-class FeedViewModel: ObservableObject {
+class FeedViewModel {
     let key = KeyChainService.shared.key
-    
+    private let caches = CacheService.shared
     @Published var imageDatas: Photo = []
-    @Published var images: [UIImage] = []
+//    @Published var images: [UIImage] = []
     var cancellable = Set<AnyCancellable>()
 
     init() {

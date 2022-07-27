@@ -6,78 +6,118 @@
 //
 
 import UIKit
-import Combine
 
 class FeedCellView: UICollectionViewCell {
+    private let cache = CacheService.shared
     static let identifier = "FeedCellView"
-    
-    var viewModel: FeedCellViewModel = FeedCellViewModel()
-    private var cancellable = Set<AnyCancellable>()
-    @Published var imageURL: String?
+    private var dataTask: URLSessionDataTask?
     
     var imageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        self.clipsToBounds = true
-        self.autoresizesSubviews = true
-        
         imageView.frame = self.bounds
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 15
-        setImageView()
         self.addSubview(imageView)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        imageView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor).isActive = true
+        imageView.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        imageView.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor).isActive = true
         
-        imageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
-        
-        $imageURL.sink { urlString in
-            if let urlString = urlString {
-                self.viewModel.loadImage(urlString, width: frame.size.width)
-                self.viewModel.fetchImage()
-            }
-
-        }
-        .store(in: &cancellable)
-        
-        viewModel.$image
-            .receive(on: DispatchQueue.main)
-            .sink { image in
-                self.imageView.image = image
-            }
-            .store(in: &cancellable)
+        imageView.layer.cornerRadius = 15
+        imageView.clipsToBounds = true
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setImageView() {
-        contentView.layer.cornerRadius = 15
-        contentView.layer.borderWidth = 1
-        contentView.layer.borderColor = UIColor.clear.cgColor
-        contentView.backgroundColor = .gray
-        contentView.clipsToBounds = false
-    }
     
     override func prepareForReuse() {
-        self.imageURL = nil
-        viewModel.cancelImage()
-        viewModel.image = UIImage()
-        imageView.image = nil
         super.prepareForReuse()
+        cancelDataTask()
+        imageView.image = nil
     }
     
-//    func bindImage() {
-//        viewModel?.$image
-//            .receive(on: DispatchQueue.main)
-//            .sink(receiveValue: { image in
-//                self.imageView.image = image
-//            })
-//            .store(in: &cancellable)
-//    }
+    func configureImage(url: String) {
+        var components = URLComponents(string: url)
+        let queryItem = URLQueryItem(name: "w", value: self.bounds.size.width.description)
+        let heightItem = URLQueryItem(name: "h", value: self.bounds.size.height.description)
+        components?.queryItems?.append(queryItem)
+        components?.queryItems?.append(heightItem)
+        
+        guard let imageURL = components?.url else {
+            return
+        }
+        
+        if let data = cache.fetchData(imageURL.absoluteString) {
+            DispatchQueue.main.async {
+                self.imageView.image = UIImage(data: data)
+            }
+            return
+        }
+        
+        
+        dataTask = URLSession.shared.dataTask(with: imageURL) { [weak self] data, response, error in
+            guard error == nil else {
+                print("Error in data task \(error?.localizedDescription)")
+                return
+            }
+            
+            guard let data = data,
+                  let receiveImage = UIImage(data: data) else {
+                print("Error in convert Image")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self?.imageView.image = receiveImage
+                self?.cache.uploadData(key: imageURL.absoluteString, data: data)
+            }
+        }
+        
+        dataTask?.resume()
+    }
+    
+    func cancelDataTask() {
+        dataTask?.cancel()
+        dataTask = nil
+    }
 }
+
+
+//extension FeedCellView {
+//    func configureImage(_ imageURL: String, width: CGFloat) {
+//        
+//        if let data = cache.fetchData(imageURL),
+//           let image = UIImage(data: data) {
+//            self.imageView.image = image
+//            return
+//        }
+//        
+//        var component = URLComponents(string: imageURL)
+//        
+//        guard let requestURL = component?.url else {
+//            return
+//        }
+//        
+//        let task = 
+//
+//        }
+//        
+//        self.dataTask = task
+//    }
+//    
+//    func fetchImage() {
+//        dataTask?.resume()
+//    }
+//    
+//    func cancelImage(){
+//        dataTask?.cancel()
+//    }
+//}
