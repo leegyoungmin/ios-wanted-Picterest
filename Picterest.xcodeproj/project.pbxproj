@@ -23,6 +23,7 @@
 		1888F42C2892B5C00032D945 /* SavedModel+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888F42A2892B5C00032D945 /* SavedModel+CoreDataProperties.swift */; };
 		1888F42E2892BA7C0032D945 /* SavedCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888F42D2892BA7C0032D945 /* SavedCollectionViewLayout.swift */; };
 		1888F4302892BD870032D945 /* SavedCollectionCustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888F42F2892BD870032D945 /* SavedCollectionCustomCell.swift */; };
+		1888F4322892C13D0032D945 /* DownLoadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1888F4312892C13D0032D945 /* DownLoadManager.swift */; };
 		18CA5FE22890D6CA0073AA00 /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CA5FE12890D6CA0073AA00 /* CacheService.swift */; };
 		18CA5FE4289116F50073AA00 /* UIColor+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CA5FE3289116F50073AA00 /* UIColor+.swift */; };
 		DE15E65C28604278003DD2F5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE15E65B28604278003DD2F5 /* AppDelegate.swift */; };
@@ -49,6 +50,7 @@
 		1888F42A2892B5C00032D945 /* SavedModel+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SavedModel+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		1888F42D2892BA7C0032D945 /* SavedCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedCollectionViewLayout.swift; sourceTree = "<group>"; };
 		1888F42F2892BD870032D945 /* SavedCollectionCustomCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedCollectionCustomCell.swift; sourceTree = "<group>"; };
+		1888F4312892C13D0032D945 /* DownLoadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownLoadManager.swift; sourceTree = "<group>"; };
 		18CA5FE12890D6CA0073AA00 /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
 		18CA5FE3289116F50073AA00 /* UIColor+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+.swift"; sourceTree = "<group>"; };
 		DE15E65828604278003DD2F5 /* Picterest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Picterest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -137,6 +139,7 @@
 				1888F41A28926C080032D945 /* Network.swift */,
 				1888F4232892921D0032D945 /* CoreDataService.swift */,
 				1867C3EA288E5A19002C42F9 /* Extensions */,
+				1888F4312892C13D0032D945 /* DownLoadManager.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 				1867C3F5288E6AF6002C42F9 /* FeedCollectionCustomCell.swift in Sources */,
 				1888F41B28926C080032D945 /* Network.swift in Sources */,
 				DE15E65C28604278003DD2F5 /* AppDelegate.swift in Sources */,
+				1888F4322892C13D0032D945 /* DownLoadManager.swift in Sources */,
 				1867C3EC288E5A22002C42F9 /* BundleExtension.swift in Sources */,
 				1867C3E3288E52C1002C42F9 /* FeedViewController.swift in Sources */,
 				1888F42C2892B5C00032D945 /* SavedModel+CoreDataProperties.swift in Sources */,

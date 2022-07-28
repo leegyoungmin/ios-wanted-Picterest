@@ -50,7 +50,9 @@ class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
     
     
     override func prepareForReuse() {
+        topButtonView.starButton.isSelected = false
         cancelLoad()
+        super.prepareForReuse()
     }
     
     func configureUI() {

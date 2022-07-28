@@ -147,13 +147,11 @@ private extension FeedViewController {
             .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] images in
-                
                 UIViewPropertyAnimator(duration: 2, curve: .easeInOut) {
                     self?.collectionView.reloadData()
                     self?.collectionView.collectionViewLayout.invalidateLayout()
                 }
                 .startAnimation()
-                
             }
             .store(in: &viewModel.cancellable)
     }
@@ -186,10 +184,18 @@ private extension FeedViewController {
                 sender.isSelected = true
                 sender.setImage(UIImage(systemName: "star.fill"), for: .normal)
                 
-                if self.viewModel.imageDatas.count > sender.tag {
+                guard let cell = self.collectionView.cellForItem(at: IndexPath(item: sender.tag, section: 0)) as? FeedCollectionCustomCell else {
+                    return
+                }
+                if self.viewModel.imageDatas.count > sender.tag,
+                    let imageData = cell.imageView.image?.pngData() {
                     let item = self.viewModel.imageDatas[sender.tag]
                     
-                    let saveResult = self.coreDataService.save(pictureId: item.id, memo: writtenText, rawURL: item.urls.raw, fileLocation: item.urls.raw)
+                    
+                    
+                    if DownLoadManager().uploadData(item.id.description + ".png", data: imageData) {
+                        let _ = self.coreDataService.save(pictureId: item.id, memo: writtenText, rawURL: item.urls.raw, fileLocation: item.urls.raw)
+                    }
                 }
             }
         }
