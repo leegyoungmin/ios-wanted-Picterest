@@ -10,7 +10,7 @@ import Combine
 
 class FeedViewController: UIViewController {
     let viewModel: FeedViewModel
-    private var bag: [UUID: AnyCancellable] = [:]
+    private var isLoading: Bool = false
     
     lazy var collectionView: UICollectionView = {
         let layout = FeedCollectionLayout()
@@ -19,7 +19,7 @@ class FeedViewController: UIViewController {
         collectionView.register(FeedCollectionCustomCell.self, forCellWithReuseIdentifier: FeedCollectionCustomCell.identifier)
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.prefetchDataSource = self
+//        collectionView.prefetchDataSource = self
         collectionView.backgroundColor = .white
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         return collectionView
@@ -41,25 +41,42 @@ class FeedViewController: UIViewController {
         configView()
         bindImageData()
         
+        viewModel.loadImageData(isPaging: false) {
+            DispatchQueue.main.async {
+                UIView.animate(withDuration: 1) {
+                    self.collectionView.collectionViewLayout.invalidateLayout()
+                    self.collectionView.reloadSections(IndexSet(integer: 0))
+                }
 
-
+            }
+ 
+        }
     }
 }
 
 extension FeedViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if collectionView.contentOffset.y > (collectionView.contentSize.height - self.collectionView.bounds.size.height) {
-            print("do updating")
-//            if !viewModel.isUpdating {
-//                p
-//            }
+        
+        let position = scrollView.contentOffset.y
+
+        if position > collectionView.contentSize.height - 100 - scrollView.frame.size.height {
+            guard !viewModel.isLoading else {
+                return
+            }
+            
+            viewModel.loadImageData(isPaging: true) {
+                DispatchQueue.main.async {
+                    UIView.animate(withDuration: 1) {
+                        self.collectionView.collectionViewLayout.invalidateLayout()
+                        self.collectionView.reloadData()
+                    }
+                }
+            }
         }
     }
 }
 
-extension FeedViewController: UICollectionViewDelegate {
-    
-}
+
 
 
 extension FeedViewController: CellTopButtonDelegate {
@@ -72,24 +89,27 @@ extension FeedViewController: CellTopButtonDelegate {
     }
 }
 
-// MARK: - UICollectionView DataSource Prefetching
-extension FeedViewController: UICollectionViewDataSourcePrefetching {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        prefetchItemsAt indexPaths: [IndexPath]
-    ) {
-        indexPaths.forEach { indexPath in
-            
-            guard let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionCustomCell else {
-                return
-            }
-            
-            let imageData = viewModel.imageDatas[indexPath.row]
-            cell.topButtonView.delegate = self
-            cell.configureImage(url: imageData.urls.raw, hexString: imageData.color)
-        }
-    }
+extension FeedViewController: UICollectionViewDelegate {
 }
+
+// MARK: - UICollectionView DataSource Prefetching
+//extension FeedViewController: UICollectionViewDataSourcePrefetching {
+//    func collectionView(
+//        _ collectionView: UICollectionView,
+//        prefetchItemsAt indexPaths: [IndexPath]
+//    ) {
+//        indexPaths.forEach { indexPath in
+//
+//            guard let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionCustomCell else {
+//                return
+//            }
+//
+//            let imageData = viewModel.imageDatas[indexPath.row]
+//            cell.topButtonView.delegate = self
+//            cell.configureImage(url: imageData.urls.raw, hexString: imageData.color)
+//        }
+//    }
+//}
 
 // MARK: - CollectionView DataSource
 extension FeedViewController: UICollectionViewDataSource {
@@ -116,6 +136,7 @@ extension FeedViewController: UICollectionViewDataSource {
         cell.topButtonView.indexLabel.text = indexPath.row.description + "번째 사진입니다."
         return cell
     }
+    
 }
 
 // MARK: - FeedCollectionLayout Delegate
@@ -133,12 +154,13 @@ extension FeedViewController: FeedCollectionLayoutDelegate {
 // MARK: - Binding Methods
 private extension FeedViewController {
     func bindImageData() {
-        viewModel.$imageDatas
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.collectionView.reloadData()
-            }
-            .store(in: &viewModel.cancellable)
+//        viewModel.$imageDatas
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] images in
+//                print("image Data count binding \(images.count)")
+//                self?.collectionView.reloadData()
+//            }
+//            .store(in: &viewModel.cancellable)
     }
 }
 

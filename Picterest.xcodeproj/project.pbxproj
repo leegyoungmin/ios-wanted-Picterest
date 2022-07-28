@@ -100,7 +100,6 @@
 			children = (
 				1868AA462891442F00FFC3CC /* SubViews */,
 				1867C3E2288E52C1002C42F9 /* FeedViewController.swift */,
-				1867C3F4288E6AF6002C42F9 /* FeedCollectionCustomCell.swift */,
 				181B8082288E86CD00ACF80C /* FeedCollectionLayout.swift */,
 			);
 			path = FeedView;
@@ -137,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				1868AA472891443A00FFC3CC /* CellTopButtonView.swift */,
+				1867C3F4288E6AF6002C42F9 /* FeedCollectionCustomCell.swift */,
 			);
 			path = SubViews;
 			sourceTree = "<group>";
