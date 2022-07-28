@@ -19,19 +19,18 @@ class FeedViewController: UIViewController {
         collectionView.register(FeedCollectionCustomCell.self, forCellWithReuseIdentifier: FeedCollectionCustomCell.identifier)
         collectionView.dataSource = self
         collectionView.delegate = self
-//        collectionView.prefetchDataSource = self
         collectionView.backgroundColor = .white
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         return collectionView
     }()
     
-    init(viewModel: FeedViewModel) {
-        self.viewModel = viewModel
+    init(observable: FeedViewModelObservable) {
+        self.viewModel = FeedViewModel(imageDataLoader: observable.imageDataLoader)
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        self.viewModel = FeedViewModel()
+        self.viewModel = FeedViewModel(imageDataLoader: ImageDataLoader(apiKey: KeyChainService.shared.key))
         super.init(coder: coder)
     }
     
@@ -40,20 +39,8 @@ class FeedViewController: UIViewController {
         setUpNavBar()
         configView()
         bindImageData()
-        
-        fetchImageData()
     }
     
-    func fetchImageData() {
-        viewModel.loadImageData {
-            DispatchQueue.main.async {
-                UIView.animate(withDuration: 1) {
-                    self.collectionView.collectionViewLayout.invalidateLayout()
-                    self.collectionView.collectionViewLayout.collectionView?.reloadData()
-                }
-            }
-        }
-    }
 }
 
 extension FeedViewController: UIScrollViewDelegate {
@@ -65,7 +52,8 @@ extension FeedViewController: UIScrollViewDelegate {
             guard !viewModel.isLoading else {
                 return
             }
-            fetchImageData()
+            
+            viewModel.loadImageData()
         }
     }
 }
@@ -125,12 +113,13 @@ extension FeedViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         let imageData = viewModel.imageDatas[indexPath.row]
+        cell.imageLoader = ImageLoader(baseURL: imageData.urls.raw)
+        cell.setUpTask()
         cell.topButtonView.delegate = self
-        cell.configureImage(url: imageData.urls.raw, hexString: imageData.color)
+        
         cell.topButtonView.indexLabel.text = indexPath.row.description + "번째 사진입니다."
         return cell
     }
-    
 }
 
 // MARK: - FeedCollectionLayout Delegate
@@ -148,13 +137,14 @@ extension FeedViewController: FeedCollectionLayoutDelegate {
 // MARK: - Binding Methods
 private extension FeedViewController {
     func bindImageData() {
-//        viewModel.$imageDatas
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] images in
-//                print("image Data count binding \(images.count)")
-//                self?.collectionView.reloadData()
-//            }
-//            .store(in: &viewModel.cancellable)
+        viewModel.$imageDatas
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] images in
+                print("image Data count binding \(images.count)")
+                self?.collectionView.collectionViewLayout.invalidateLayout()
+                self?.collectionView.reloadData()
+            }
+            .store(in: &viewModel.cancellable)
     }
 }
 

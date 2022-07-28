@@ -8,65 +8,37 @@
 import Combine
 import UIKit
 
-class FeedViewModel {
-    let key = KeyChainService.shared.key
+protocol FeedViewModelObservable: AnyObject {
+    var isLoading: Bool { get set }
+    var pageNumber: Int { get set }
+    var imageDataLoader: ImageDataLoader { get }
+    var cancellable: Set<AnyCancellable> { get set }
+}
+
+class FeedViewModel: FeedViewModelObservable {
     var isLoading: Bool = false
     var pageNumber: Int = 1
-    var imageDatas: [PhotoElement] = []
+    @Published var imageDatas: Photo = []
+    var imageDataLoader: ImageDataLoader
+    var cancellable = Set<AnyCancellable>()
     
-    func loadImageData(completion: @escaping () -> Void) {
+    init(imageDataLoader: ImageDataLoader) {
+        self.imageDataLoader = imageDataLoader
+    }
+    
+    func loadImageData() {
         isLoading = true
         
-        let urlString = "https://api.unsplash.com/photos/"
-        guard var components = URLComponents(string: urlString) else {
-            return
-        }
-        
-        let query = [
-            "client_id":key,
-            "page":"\(pageNumber)",
-            "per_page":"15"
-        ]
-        
-        let queryItems = query.map {
-            URLQueryItem(name: $0.key, value: $0.value)
-        }
-        
-        components.queryItems = queryItems
-        guard let componentURL = components.url else {
-            return
-        }
-        URLSession.shared.dataTask(with: componentURL) { data, response, error in
-            guard error == nil else {
-                print("Error in data add")
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse,
-                  response.statusCode == 200 else {
-                print("Error in status code")
-
-                return
-            }
-            
-            guard let data = data else {
-                print("Error in decode data")
-
-                return
-            }
-
-            do {
-                let datas = try JSONDecoder().decode(Photo.self, from: data)
-
-                self.imageDatas.append(contentsOf: datas)
-
+        imageDataLoader.requestNetwork(query: nil) { result in
+            switch result {
+            case .success(let datas):
+                if let photos = datas as? Photo {
+                    self.imageDatas.append(contentsOf: photos)
+                }
                 self.isLoading = false
-                self.pageNumber += 1
-                completion()
-            } catch {
-                print("Error in decode data")
+            case .failure(let error):
+                print("Error in decode photo \(error)")
             }
         }
-        .resume()
     }
 }

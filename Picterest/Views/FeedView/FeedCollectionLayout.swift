@@ -71,7 +71,6 @@ class FeedCollectionLayout: UICollectionViewLayout {
             
             contentHeight = max(contentHeight, frame.maxY)
             yOffset[column] = yOffset[column] + height
-            print(column,yOffset,"🥰")
             column = yOffset[0] < yOffset[1] ? 0 : 1
         }
     }

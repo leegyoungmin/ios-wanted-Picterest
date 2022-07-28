@@ -6,6 +6,8 @@
 import UIKit
 
 class TabViewController: UITabBarController {
+    let key = KeyChainService.shared.key
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -16,7 +18,8 @@ class TabViewController: UITabBarController {
                                            image: UIImage(systemName: "star"),
                                            selectedImage: UIImage(systemName: "star.fill"))
         
-        let feedController = FeedViewController(viewModel: FeedViewModel())
+        let imageLoader = ImageDataLoader(apiKey: key)
+        let feedController = FeedViewController(observable: FeedViewModel(imageDataLoader: imageLoader))
         let feedNavController = UINavigationController(rootViewController: feedController)
         feedController.tabBarItem = feedTabBarItem
         

@@ -8,15 +8,17 @@
 import UIKit
 
 protocol ImageDrawAble: AnyObject {
-    var blurEffect: UIBlurEffect { get }
-    var visualEffectView: UIVisualEffectView { get }
+    var imageLoader: ImageLoader? { get }
+    func setUpTask()
 }
 
 class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
+    var imageLoader: ImageLoader?
     private let cache = CacheService.shared
     static let identifier = "FeedCollectionCustomCell"
     private var dataTask: URLSessionDataTask?
     let blurEffect = UIBlurEffect(style: .regular)
+
     lazy var visualEffectView = UIVisualEffectView(effect: blurEffect)
     
     var topButtonView: CellTopButtonView = {
@@ -30,11 +32,12 @@ class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
         return imageView
     }()
     
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureUI()
+        setUpTask()
     }
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -42,19 +45,12 @@ class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
     
     
     override func prepareForReuse() {
-        super.prepareForReuse()
-        cancelDataTask()
         imageView.image = nil
-    }
-    
-    func configureImage(url: String, hexString: String) {
-        configureBackground(hexString: hexString)
-        setAnimation()
-        loadImage(url)
+        cancelLoad()
     }
     
     func configureUI() {
-        self.autoresizesSubviews = true
+        self.autoresizesSubviews = false
 
         [
             imageView,
@@ -86,80 +82,30 @@ class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
 
 }
 
-private extension FeedCollectionCustomCell {
-    func setUpImageURL(_ url: String) -> URLComponents? {
-        var components = URLComponents(string: url)
-        let queryItem = URLQueryItem(name: "w", value: self.bounds.size.width.description)
-        let heightItem = URLQueryItem(name: "h", value: self.bounds.size.height.description)
-        components?.queryItems?.append(queryItem)
-        components?.queryItems?.append(heightItem)
+extension FeedCollectionCustomCell {
+    func setUpTask() {
+        let query = [
+            "w": self.bounds.size.width.description,
+            "h": self.bounds.size.height.description
+        ]
         
-        return components
-    }
-    
-    func configureBackground(hexString: String) {
-        let backgroundColor = UIColor(hexString: hexString)?.withAlphaComponent(0.5)
-        self.contentView.backgroundColor = backgroundColor
-        self.contentView.layer.cornerRadius = 15
-    }
-    
-    func setAnimation() {
-        visualEffectView.alpha = 1
-        visualEffectView.frame = self.contentView.frame
-        imageView.addSubview(visualEffectView)
-    }
-    
-    func loadCacheImage(path: String) -> Bool {
-        if let data = cache.fetchData(path) {
-            DispatchQueue.main.async {
-                
-                UIView.animate(withDuration: 1.0) {
-                    self.contentView.backgroundColor = .clear
-                    self.visualEffectView.alpha = 0
-                }
-                self.imageView.image = UIImage(data: data)
-            }
-            return true
-        } else {
-            return false
-        }
-    }
-    
-    func loadImage(_ url: String) {
-        
-        guard let component = setUpImageURL(url),
-              let imageURL = component.url else {
-            return
-        }
-        
-        if !loadCacheImage(path: imageURL.absoluteString) {
-            dataTask = URLSession.shared.dataTask(with: imageURL) { [weak self] data, response, error in
-                guard error == nil else {
-                    print("Error in data task \(error?.localizedDescription)")
-                    return
-                }
-                
-                guard let data = data,
-                      let receiveImage = UIImage(data: data) else {
-                    print("Error in convert Image")
-                    return
-                }
-                
-                DispatchQueue.main.async {
-                    UIView.animate(withDuration: 1.0) {
-                        self?.contentView.backgroundColor = .clear
-                        self?.visualEffectView.alpha = 0
+        imageLoader?.requestNetwork(query: query, completion: { result in
+            switch result {
+            case .success(let data):
+                if let image = data as? UIImage {
+                    DispatchQueue.main.async {
+                        self.imageView.image = image
                     }
-                    self?.imageView.image = receiveImage
-                    self?.cache.uploadData(key: imageURL.absoluteString, data: data)
                 }
+            case .failure(let error):
+                print("Error in download mage \(error)")
             }
-            
-            dataTask?.resume()
-        }
+        })
+        
+        imageLoader?.task?.resume()
     }
     
-    func cancelDataTask() {
+    func cancelLoad() {
         dataTask?.cancel()
         dataTask = nil
     }
