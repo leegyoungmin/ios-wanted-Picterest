@@ -41,15 +41,17 @@ class FeedViewController: UIViewController {
         configView()
         bindImageData()
         
-        viewModel.loadImageData(isPaging: false) {
+        fetchImageData()
+    }
+    
+    func fetchImageData() {
+        viewModel.loadImageData {
             DispatchQueue.main.async {
                 UIView.animate(withDuration: 1) {
                     self.collectionView.collectionViewLayout.invalidateLayout()
-                    self.collectionView.reloadSections(IndexSet(integer: 0))
+                    self.collectionView.collectionViewLayout.collectionView?.reloadData()
                 }
-
             }
- 
         }
     }
 }
@@ -63,15 +65,7 @@ extension FeedViewController: UIScrollViewDelegate {
             guard !viewModel.isLoading else {
                 return
             }
-            
-            viewModel.loadImageData(isPaging: true) {
-                DispatchQueue.main.async {
-                    UIView.animate(withDuration: 1) {
-                        self.collectionView.collectionViewLayout.invalidateLayout()
-                        self.collectionView.reloadData()
-                    }
-                }
-            }
+            fetchImageData()
         }
     }
 }
