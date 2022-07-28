@@ -47,7 +47,7 @@ extension FeedViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         let position = scrollView.contentOffset.y
-
+        
         if position > collectionView.contentSize.height - 100 - scrollView.frame.size.height {
             guard !viewModel.isLoading else {
                 return
@@ -101,7 +101,7 @@ extension FeedViewController: UICollectionViewDataSource {
     ) -> Int {
         return viewModel.imageDatas.count
     }
-
+    
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
@@ -116,7 +116,8 @@ extension FeedViewController: UICollectionViewDataSource {
         cell.imageLoader = ImageLoader(baseURL: imageData.urls.raw)
         cell.setUpTask()
         cell.topButtonView.delegate = self
-        
+        cell.blurColor = UIColor(hexString: imageData.color)
+        print(indexPath.row, imageData.urls.raw)
         cell.topButtonView.indexLabel.text = indexPath.row.description + "번째 사진입니다."
         return cell
     }
@@ -138,11 +139,16 @@ extension FeedViewController: FeedCollectionLayoutDelegate {
 private extension FeedViewController {
     func bindImageData() {
         viewModel.$imageDatas
+            .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] images in
-                print("image Data count binding \(images.count)")
-                self?.collectionView.collectionViewLayout.invalidateLayout()
-                self?.collectionView.reloadData()
+                
+                UIViewPropertyAnimator(duration: 2, curve: .easeInOut) {
+                    self?.collectionView.reloadData()
+                    self?.collectionView.collectionViewLayout.invalidateLayout()
+                }
+                .startAnimation()
+                
             }
             .store(in: &viewModel.cancellable)
     }

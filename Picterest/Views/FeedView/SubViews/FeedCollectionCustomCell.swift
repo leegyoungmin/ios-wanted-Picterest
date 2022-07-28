@@ -9,16 +9,18 @@ import UIKit
 
 protocol ImageDrawAble: AnyObject {
     var imageLoader: ImageLoader? { get }
+    var blurColor: UIColor? { get }
     func setUpTask()
 }
 
 class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
+    var blurColor: UIColor?
     var imageLoader: ImageLoader?
     private let cache = CacheService.shared
     static let identifier = "FeedCollectionCustomCell"
     private var dataTask: URLSessionDataTask?
     let blurEffect = UIBlurEffect(style: .regular)
-
+    
     lazy var visualEffectView = UIVisualEffectView(effect: blurEffect)
     
     var topButtonView: CellTopButtonView = {
@@ -34,8 +36,11 @@ class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         configureUI()
-        setUpTask()
+        
+        visualEffectView.alpha = 1.0
+
     }
     
     
@@ -45,13 +50,12 @@ class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
     
     
     override func prepareForReuse() {
-        imageView.image = nil
         cancelLoad()
     }
     
     func configureUI() {
         self.autoresizesSubviews = false
-
+        
         [
             imageView,
             topButtonView
@@ -59,14 +63,14 @@ class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.layer.cornerRadius = 15
             $0.clipsToBounds = true
-
+            
             self.addSubview($0)
         }
         
         NSLayoutConstraint.activate([
             imageView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             imageView.topAnchor.constraint(equalTo: self.topAnchor),
-
+            
             topButtonView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             topButtonView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             topButtonView.topAnchor.constraint(equalTo: self.topAnchor),
@@ -78,12 +82,15 @@ class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
         
         topButtonView.backgroundColor = .black.withAlphaComponent(0.2)
         topButtonView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        
+        imageView.backgroundColor = blurColor
     }
-
+    
 }
 
 extension FeedCollectionCustomCell {
     func setUpTask() {
+        
         let query = [
             "w": self.bounds.size.width.description,
             "h": self.bounds.size.height.description
@@ -106,7 +113,8 @@ extension FeedCollectionCustomCell {
     }
     
     func cancelLoad() {
-        dataTask?.cancel()
-        dataTask = nil
+        imageLoader?.task?.cancel()
+        imageLoader?.task = nil
+        imageView.image = nil
     }
 }
