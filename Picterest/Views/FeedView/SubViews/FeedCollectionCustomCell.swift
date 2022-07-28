@@ -47,6 +47,7 @@ class FeedCollectionCustomCell: UICollectionViewCell, ImageDrawAble {
     
     override func prepareForReuse() {
         topButtonView.starButton.isSelected = false
+        topButtonView.starButton.setImage(UIImage(systemName: "star"), for: .normal)
         cancelLoad()
         super.prepareForReuse()
     }

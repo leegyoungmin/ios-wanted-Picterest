@@ -10,7 +10,7 @@ import Combine
 import CoreData
 
 class FeedViewController: UIViewController {
-    let coreDataService = CoreDataService.shared
+    private let coreDataService = CoreDataService.shared
     let viewModel: FeedViewModel
     private var isLoading: Bool = false
     
@@ -55,7 +55,6 @@ private extension CoreDataService {
         object.setValue(memo, forKey: "memo")
         object.setValue(rawURL, forKey: "rawURL")
         object.setValue(fileLocation, forKey: "fileURL")
-        print(object)
         do {
             self.saveContext()
             return true
@@ -122,7 +121,19 @@ extension FeedViewController: UICollectionViewDataSource {
         cell.topButtonView.delegate = self
         cell.topButtonView.starButton.tag = indexPath.row
         cell.blurColor = UIColor(hexString: imageData.color)
-//        print(indexPath.row, imageData.urls.raw)
+        
+        if let fetchedData = coreDataService.fetch() as? [SavedModel] {
+            let fetchIDs = fetchedData.compactMap {
+                $0.id
+            }
+            print(fetchIDs)
+            print(imageData.id)
+            if fetchIDs.contains(imageData.id) {
+                cell.topButtonView.starButton.isSelected = true
+                cell.topButtonView.starButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+            }
+        }
+        
         cell.topButtonView.indexLabel.text = indexPath.row.description + "번째 사진입니다."
         return cell
     }
