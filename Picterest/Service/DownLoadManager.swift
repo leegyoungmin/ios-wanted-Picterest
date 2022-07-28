@@ -20,6 +20,13 @@ class DownLoadManager {
         createFolder()
     }
     
+    func fetchData(key: String) -> Data? {
+        guard let writeURL = folderURL?.appendingPathComponent(key) else {
+            return nil
+        }
+        return FileManager.default.contents(atPath: writeURL.path)
+    }
+    
     func uploadData(_ key: String, data: Data) -> Bool {
         guard let writeURL = folderURL?.appendingPathComponent(key) else {
             return false

@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 
 struct savedModel {
@@ -15,6 +16,13 @@ struct savedModel {
     var meme: String?
     var file: String?
     var raw: String?
+    
+    var image: UIImage? {
+        guard let imageData = DownLoadManager().fetchData(key: file ?? "") else {
+            return nil
+        }
+        return UIImage(data: imageData)
+    }
 }
 
 extension SavedModel {

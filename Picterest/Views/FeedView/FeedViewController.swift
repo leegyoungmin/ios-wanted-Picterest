@@ -184,19 +184,27 @@ private extension FeedViewController {
                 sender.isSelected = true
                 sender.setImage(UIImage(systemName: "star.fill"), for: .normal)
                 
-                guard let cell = self.collectionView.cellForItem(at: IndexPath(item: sender.tag, section: 0)) as? FeedCollectionCustomCell else {
-                    return
-                }
-                if self.viewModel.imageDatas.count > sender.tag,
-                    let imageData = cell.imageView.image?.pngData() {
-                    let item = self.viewModel.imageDatas[sender.tag]
-                    
-                    
-                    
-                    if DownLoadManager().uploadData(item.id.description + ".png", data: imageData) {
-                        let _ = self.coreDataService.save(pictureId: item.id, memo: writtenText, rawURL: item.urls.raw, fileLocation: item.urls.raw)
+                let data = self.viewModel.imageDatas[sender.tag]
+                
+                let imageLoader = ImageLoader(baseURL: data.urls.regular)
+                
+                imageLoader.requestNetwork(query: nil) { result in
+                    switch result {
+                    case .success(let image):
+                        if let image = image as? UIImage, let imageData = image.pngData() {
+                            let imageKey = data.id.description + ".png"
+                            if DownLoadManager().uploadData(imageKey, data: imageData) {
+                                let _ = self.coreDataService.save(pictureId: data.id, memo: writtenText, rawURL: data.urls.raw, fileLocation: imageKey)
+                            }
+                        }
+                    case .failure(_):
+                        print("Error in download image")
                     }
                 }
+                
+                imageLoader.task?.resume()
+                
+                
             }
         }
         let cancelAction = UIAlertAction(title: "취소", style: .destructive) { action in

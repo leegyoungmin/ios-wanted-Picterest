@@ -39,7 +39,6 @@ class CoreDataService {
     func fetch<T: NSManagedObject>(
         request: NSFetchRequest<T> = NSFetchRequest(entityName: "SavedModel")
     ) -> [T] {
-        
         //TODO: - Sort 메서드 추가하기
         do {
             let result = try context.fetch(request)
@@ -50,12 +49,11 @@ class CoreDataService {
         }
     }
     
-    @discardableResult
-    func deleteAll<T: NSManagedObject>(request: NSFetchRequest<T>) -> Bool {
-        let request: NSFetchRequest<NSFetchRequestResult> = T.fetchRequest()
+    func deleteAll() -> Bool {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "SavedModel")
         let delete = NSBatchDeleteRequest(fetchRequest: request)
         do {
-            try self.persistentContrainer.viewContext.execute(delete)
+            try self.context.execute(delete)
             return true
         } catch {
             return false

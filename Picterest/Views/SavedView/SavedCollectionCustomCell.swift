@@ -11,7 +11,6 @@ class SavedCollectionCustomCell: UICollectionViewCell {
     static let identifier = "SavedCollectionCustomCell"
     lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "person")
         return imageView
     }()
     let topView = CellTopButtonView()
@@ -28,7 +27,6 @@ class SavedCollectionCustomCell: UICollectionViewCell {
     
     func configureUI() {
         self.autoresizesSubviews = true
-        self.backgroundColor = .systemBlue
         self.layer.cornerRadius = 15
         [
             imageView,
@@ -38,7 +36,6 @@ class SavedCollectionCustomCell: UICollectionViewCell {
             $0.clipsToBounds = true
             $0.translatesAutoresizingMaskIntoConstraints = false
             self.addSubview($0)
-            
         }
         
         NSLayoutConstraint.activate([
@@ -54,10 +51,12 @@ class SavedCollectionCustomCell: UICollectionViewCell {
         
         imageView.frame = self.bounds
         imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        topView.backgroundColor = .black.withAlphaComponent(0.2)
+        topView.backgroundColor = .black.withAlphaComponent(0.5)
         topView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
-        
-        topView.backgroundColor = .black.withAlphaComponent(0.2)
     }
     
+    override func prepareForReuse() {
+        imageView.image = nil
+        super.prepareForReuse()
+    }
 }

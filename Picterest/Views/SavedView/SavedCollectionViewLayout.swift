@@ -7,7 +7,15 @@
 
 import UIKit
 
+protocol SaveCollectionViewDelegate: AnyObject {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        heightForPhotoAtIndexPath: IndexPath
+    ) -> CGFloat
+}
+
 class SavedCollectionViewLayout: UICollectionViewLayout {
+    weak var delegate: SaveCollectionViewDelegate?
     private let cellPadding: CGFloat = 10
     
     private var cache: [UICollectionViewLayoutAttributes] = []
@@ -32,18 +40,19 @@ class SavedCollectionViewLayout: UICollectionViewLayout {
         }
         
         let width = contentWidth
-        let height = 200
-        
-        var contentAllHeight: CGFloat = 0
         
         for item in 0..<collectionView.numberOfItems(inSection: 0) {
             let indexPath = IndexPath(item: item, section: 0)
-            let frame = CGRect(x: 0, y: contentAllHeight, width: width, height: CGFloat(height))
+            let height = delegate?.collectionView(
+                collectionView,
+                heightForPhotoAtIndexPath: indexPath
+            ) ?? 0
+            let frame = CGRect(x: 0, y: contentHeight, width: width, height: height)
             let attribute = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             attribute.frame = frame.insetBy(dx: cellPadding, dy: cellPadding)
             
             cache.append(attribute)
-            contentAllHeight += CGFloat(height)
+            contentHeight += CGFloat(height)
         }
         
     }

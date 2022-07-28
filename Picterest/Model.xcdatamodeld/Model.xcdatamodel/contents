@@ -7,6 +7,6 @@
         <attribute name="rawURL" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="SavedModel" positionX="-45" positionY="0" width="128" height="89"/>
+        <element name="SavedModel" positionX="-45" positionY="0" width="128" height="103"/>
     </elements>
 </model>
