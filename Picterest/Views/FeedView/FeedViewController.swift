@@ -7,8 +7,10 @@
 
 import UIKit
 import Combine
+import CoreData
 
 class FeedViewController: UIViewController {
+    let coreDataService = CoreDataService.shared
     let viewModel: FeedViewModel
     private var isLoading: Bool = false
     
@@ -43,6 +45,28 @@ class FeedViewController: UIViewController {
     
 }
 
+private extension CoreDataService {
+    func save(pictureId: String, memo: String, rawURL: String, fileLocation: String) -> Bool {
+        let context = self.persistentContrainer.viewContext
+        
+        let object = NSEntityDescription.insertNewObject(forEntityName: "SavedModel", into: context)
+        
+        object.setValue(pictureId, forKey: "id")
+        object.setValue(memo, forKey: "memo")
+        object.setValue(rawURL, forKey: "rawURL")
+        object.setValue(fileLocation, forKey: "fileURL")
+        print(object)
+        do {
+            self.saveContext()
+            return true
+        } catch {
+            context.rollback()
+            return false
+        }
+    }
+}
+
+// MARK: - ScrollView Delegate
 extension FeedViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
@@ -60,7 +84,7 @@ extension FeedViewController: UIScrollViewDelegate {
 
 
 
-
+// MARK: - Cell Top Button Delegate
 extension FeedViewController: CellTopButtonDelegate {
     func CellTopButton(to didTapStarButton: UIButton) {
         if didTapStarButton.isSelected {
@@ -70,28 +94,8 @@ extension FeedViewController: CellTopButtonDelegate {
         }
     }
 }
-
-extension FeedViewController: UICollectionViewDelegate {
-}
-
-// MARK: - UICollectionView DataSource Prefetching
-//extension FeedViewController: UICollectionViewDataSourcePrefetching {
-//    func collectionView(
-//        _ collectionView: UICollectionView,
-//        prefetchItemsAt indexPaths: [IndexPath]
-//    ) {
-//        indexPaths.forEach { indexPath in
-//
-//            guard let cell = collectionView.cellForItem(at: indexPath) as? FeedCollectionCustomCell else {
-//                return
-//            }
-//
-//            let imageData = viewModel.imageDatas[indexPath.row]
-//            cell.topButtonView.delegate = self
-//            cell.configureImage(url: imageData.urls.raw, hexString: imageData.color)
-//        }
-//    }
-//}
+// MARK: - CollectionView Delegate
+extension FeedViewController: UICollectionViewDelegate {}
 
 // MARK: - CollectionView DataSource
 extension FeedViewController: UICollectionViewDataSource {
@@ -116,8 +120,9 @@ extension FeedViewController: UICollectionViewDataSource {
         cell.imageLoader = ImageLoader(baseURL: imageData.urls.raw)
         cell.setUpTask()
         cell.topButtonView.delegate = self
+        cell.topButtonView.starButton.tag = indexPath.row
         cell.blurColor = UIColor(hexString: imageData.color)
-        print(indexPath.row, imageData.urls.raw)
+//        print(indexPath.row, imageData.urls.raw)
         cell.topButtonView.indexLabel.text = indexPath.row.description + "번째 사진입니다."
         return cell
     }
@@ -180,7 +185,12 @@ private extension FeedViewController {
             if let writtenText = alertController.textFields?.first?.text {
                 sender.isSelected = true
                 sender.setImage(UIImage(systemName: "star.fill"), for: .normal)
-                print(writtenText)
+                
+                if self.viewModel.imageDatas.count > sender.tag {
+                    let item = self.viewModel.imageDatas[sender.tag]
+                    
+                    let saveResult = self.coreDataService.save(pictureId: item.id, memo: writtenText, rawURL: item.urls.raw, fileLocation: item.urls.raw)
+                }
             }
         }
         let cancelAction = UIAlertAction(title: "취소", style: .destructive) { action in
