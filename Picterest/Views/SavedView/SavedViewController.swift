@@ -48,7 +48,6 @@ class SavedViewController: UIViewController {
                                             raw: model.rawURL)
 
                 self.imageDatas.append(savedModel)
-                print(savedModel.image?.size)
             }
         }
     }
